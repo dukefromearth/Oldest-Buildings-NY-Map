@@ -1,0 +1,231 @@
+<html>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js" integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg==" crossorigin=""></script>
+
+<div id="mapid" style="width: 100%; height: 500px;"></div>
+<script>
+
+	var nycMap = L.map('mapid').setView([40.730610, -73.935242], 9);
+    
+	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZHVrZWZyb21lYXJ0aCIsImEiOiJjamtvZXJkaW8yeDRiM2tvM3doaWRkbzByIn0.AoIA-92LPcFbM3_krlQvwA', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+		id: 'mapbox.streets'
+	}).addTo(nycMap);
+    
+  var house = L.icon({
+    iconUrl: 'https://static1.squarespace.com/static/58dbc78fdb29d6aa4b698fec/t/5b6e3f2340ec9a4b5a6f0eda/1533951780172/logo_transparent3.png?format=100w',
+    iconSize:     [25, 25], // size of the icon
+    iconAnchor:   [25, 25], // point of the icon which will correspond to marker's location
+    popupAnchor:  [-15, -30] // point from which the popup should open relative to the iconAnchor
+    
+});   
+    
+    
+    function building(name, latitude, longitude, icon, hyperlink, picHyperlink, date, description){
+        building.name = name;
+        building.latitude = longitude;
+        building.longitude = latitude;
+        building.icon = icon;
+        building.hyperlink = hyperlink;
+        building.picHyperlink = picHyperlink;
+        building.date = date;
+        building.description = description;
+    }
+    
+    //creates structs
+    function makeStruct(names) {
+        var names = names.split(',');
+        var count = names.length;
+        function constructor() {
+            for (var i = 0; i < count; i++) {
+                this[names[i]] = arguments[i];
+            }
+        }
+        return constructor; 
+    }
+    
+    //creates markers and binds the popup to the markers
+    function createMarkers(){
+        var marker = [];
+
+        for (var i = 0; i <= 40; ++i) {
+            marker[i] = L.marker([buildings[i].latitude,
+                                  buildings[i].longitude],
+                                 {icon:house}).addTo(nycMap);
+            marker[i].bindPopup("<img src='" + buildings[i].picHyperlink + "'class = leaflet-popup-content," + "><br>"  +
+                                "<br><a href='" + buildings[i].hyperlink + "'>" + buildings[i].name + "<\a>" +
+                                "<p <br> Date built: " + buildings[i].date +
+                                "<br>" + buildings[i].description + "<\p", {
+                maxWidth: "auto"
+            }
+                               );
+            
+        }
+   } 
+    
+
+    var building = makeStruct("name,latitude,longitude,icon,hyperlink,picHyperlink,date,description");
+    var buildings = [new building("Pieter Claesen Wyckoff House", 40.644444, -73.920833,
+                     house, "https://en.wikipedia.org/wiki/Wyckoff_House", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Wyckoff-house.jpg/250px-Wyckoff-house.jpg", 1636,
+                          "The house was one of several ordered built by Wouter Van Twiller before he was recalled to Holland by 1640. The house is estimated to have been built ca. 1638, making it the oldest surviving example of a Dutch saltbox frame house in America, and it was one of the first structures built by Europeans on Long Island."),
+                                           
+                     new building("Billiou–Stillwell–Perine House", 40.592778, -74.100833, house, "https://en.wikipedia.org/wiki/Billiou%E2%80%93Stillwell%E2%80%93Perine_House", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Perine-house.JPG/100px-Perine-house.JPG", 1662, "Oldest surviving structure in Staten Island"),
+                     
+                     new building("Bronck House",42.342052,-73.848724,house,"https://en.wikipedia.org/wiki/Bronck_House","https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Bronck-house.jpg/100px-Bronck-house.jpg",1663,"The Bronck House, also known as the Pieter Bronck House, is a historic house museum at 90 County Highway 42, west of Coxsackie in Greene County, New York. With a construction history dating to 1663, it is believed to be the oldest surviving building in Upstate New York,[3] and is a well-preserved example of early Dutch and Swedish Colonial architecture. It was declared a National Historic Landmark in 1967. It is now a museum property managed by the county historical society."),
+                    
+                     new building("Cubberly-Britton Cottage", 40.572, -74.145861, house, "https://en.wikipedia.org/wiki/The_Britton_Cottage", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/The_Cubberly-Britton_House.jpg/220px-The_Cubberly-Britton_House.jpg", 1670, "Formerly known as the Cubberly House[1], is a house in the Historic Richmond Town museum complex in the neighborhood of Richmondtown, Staten Island, in New York City."),
+
+                     new building("John Bowne House",40.762778,-73.825556,house,"https://en.wikipedia.org/wiki/John_Bowne_House","https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/John_Bowne_House_%28WTM_by_official-ly_cool_077%29.jpg/200px-John_Bowne_House_%28WTM_by_official-ly_cool_077%29.jpg",1669,"Built around 1661, it was the location of a Quaker meeting in 1662 that resulted in the arrest of its owner, John Bowne, by Peter Stuyvesant, Dutch Director-General of New Netherland."),
+
+                     new building("Cubberly-Britton Cottage",40.572,-74.145861,house,"https://en.wikipedia.org/wiki/The_Britton_Cottage","https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/The_Cubberly-Britton_House.jpg/220px-The_Cubberly-Britton_House.jpg",1670,"Formerly known as the Cubberly House[1], is a house in the Historic Richmond Town museum complex in the neighborhood of Richmondtown, Staten Island, in New York City."),
+
+                     new building("Abraham Manee House",40.515198,-74.197559,house,"https://en.wikipedia.org/wiki/Abraham_Manee_House","https://upload.wikimedia.org/wikipedia/commons/5/5a/Maneeseguine5.jpg",1670,"The Abraham Manee House, also known as the Manee-Seguine Homestead, is a three-part Colonial Dutch dwelling on Staten Island in New York. I"),
+
+                     new building("Timothy Knapp House",40.964722,-73.686667,house,"https://en.wikipedia.org/wiki/Timothy_Knapp_House","https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Knapp_House_Rye_NY_DSCN2033.jpg/500px-Knapp_House_Rye_NY_DSCN2033.jpg",1670,"The Timothy Knapp House is considered the oldest residential property in Westchester County, New York, having been built in the 1660s."),
+
+                     new building("Ariaanje Coeymans House",42.476389,-73.792222,house,"https://en.wikipedia.org/wiki/Ariaanje_Coeymans_House","https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Ariaanje_Coeymans_House_HABS_NY1.jpg/500px-Ariaanje_Coeymans_House_HABS_NY1.jpg",1675,"Ariaanje Coeymans House is a historic home located at Coeymans in Albany County, New York. It was built in c.1690 and has a 2- to _3 1⁄2-story main block with a 1- to 2-story wing. It is constructed of stone and brick and has a gambrel roof."),
+
+                     new building("Conference House",40.502861,-74.253778,house,"https://en.wikipedia.org/wiki/Conference_House","https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Conference-house-staten-island.jpg/500px-Conference-house-staten-island.jpg",1675,"The Conference House (also known as Billop House[3]) was built before 1680 and is located near the southernmost tip of New York State on Staten Island, which became known as Billop's Point in the 18th century. The Staten Island Peace Conference was held here on September 11, 1776, which unsuccessfully attempted to end the American Revolutionary War."),
+
+                     new building("Jans Martense Schenck house",40.615556,-73.912111,house,"https://en.wikipedia.org/wiki/Jans_Martense_Schenck_house","https://upload.wikimedia.org/wikipedia/commons/d/dd/Schenk-Crooke_House2.jpg",1675,"Jan Martense Schenck (1631 in Amersfoort, Utrecht, Netherlands - Aug, 27 1687) arrived in New Netherlands on June 28, 1650, on the ship De Valckenier (the Falconer) with his sister Annetje and brother Roelof. He bought a parcel of land on Molen Eylandt (Mill Island) in the Dutch town of Nieuw Amersfoort in what is now the Mill Basin section of Brooklyn, New York"),
+
+                     new building("Old Senate House",41.935078,-74.019111,house,"https://en.wikipedia.org/wiki/Senate_House_State_Historic_Site","https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Kingston-senate-house.jpg/500px-Kingston-senate-house.jpg",1676,"The Senate House State Historic Site is located on Fair Street in Kingston, New York, United States. New York State was established there in 1777, during the Revolutionary War."),
+
+                     new building("Van Leuven-Bevier House Museum",41.686111,-74.170833,house,"https://en.wikipedia.org/wiki/Bevier_House","https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Bevier_House%2C_Gardiner%2C_NY.jpg/500px-Bevier_House%2C_Gardiner%2C_NY.jpg",1680,"Built by Andries Pieterse Van Leuven in 1680, on land he purchased from the Esopus Indians.[citation needed] Currently houses the Ulster County Historical Society"),
+
+                     new building("Van Nostrand-Starkins House",40.797222,-73.648611,house,"https://en.wikipedia.org/wiki/Main_Street_Historic_District_(Roslyn,_New_York)","https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Van_Nostrand-Starkins_House_from_Main_Street_and_East_Broadway.JPG/200px-Van_Nostrand-Starkins_House_from_Main_Street_and_East_Broadway.JPG",1680,"A one-and-a-half-story clapboard structure begun in 1680, making it the oldest in the village, it was purchased by blacksmith Joseph Starkins in 1795."),
+                     
+                      new building("Bronck House",42.342052,-73.848724,house,"https://en.wikipedia.org/wiki/Bronck_House","https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Bronck-house.jpg/100px-Bronck-house.jpg",1663,"The Bronck House, also known as the Pieter Bronck House, is a historic house museum at 90 County Highway 42, west of Coxsackie in Greene County, New York. With a construction history dating to 1663, it is believed to be the oldest surviving building in Upstate New York,[3] and is a well-preserved example of early Dutch and Swedish Colonial architecture. It was declared a National Historic Landmark in 1967. It is now a museum property managed by the county historical society."),
+                     
+                     new building("Cubberly-Britton Cottage", 40.572, -74.145861, house, "https://en.wikipedia.org/wiki/The_Britton_Cottage", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/The_Cubberly-Britton_House.jpg/220px-The_Cubberly-Britton_House.jpg", 1670, "Formerly known as the Cubberly House[1], is a house in the Historic Richmond Town museum complex in the neighborhood of Richmondtown, Staten Island, in New York City."),
+
+                     new building("John Bowne House",40.762778,-73.825556,house,"https://en.wikipedia.org/wiki/John_Bowne_House","https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/John_Bowne_House_%28WTM_by_official-ly_cool_077%29.jpg/200px-John_Bowne_House_%28WTM_by_official-ly_cool_077%29.jpg",1669,"Built around 1661, it was the location of a Quaker meeting in 1662 that resulted in the arrest of its owner, John Bowne, by Peter Stuyvesant, Dutch Director-General of New Netherland."),
+
+                     new building("Cubberly-Britton Cottage",40.572,-74.145861,house,"https://en.wikipedia.org/wiki/The_Britton_Cottage","https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/The_Cubberly-Britton_House.jpg/220px-The_Cubberly-Britton_House.jpg",1670,"Formerly known as the Cubberly House[1], is a house in the Historic Richmond Town museum complex in the neighborhood of Richmondtown, Staten Island, in New York City."),
+                     
+                     new building("Abraham Manee House",40.515198,-74.197559,house,"https://en.wikipedia.org/wiki/Abraham_Manee_House","https://upload.wikimedia.org/wikipedia/commons/5/5a/Maneeseguine5.jpg",1670,"The Abraham Manee House, also known as the Manee-Seguine Homestead, is a three-part Colonial Dutch dwelling on Staten Island in New York. I"),
+
+                     new building("Timothy Knapp House",40.964722,-73.686667,house,"https://en.wikipedia.org/wiki/Timothy_Knapp_House","https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Knapp_House_Rye_NY_DSCN2033.jpg/500px-Knapp_House_Rye_NY_DSCN2033.jpg",1670,"The Timothy Knapp House is considered the oldest residential property in Westchester County, New York, having been built in the 1660s."),
+
+                     new building("Ariaanje Coeymans House",42.476389,-73.792222,house,"https://en.wikipedia.org/wiki/Ariaanje_Coeymans_House","https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Ariaanje_Coeymans_House_HABS_NY1.jpg/500px-Ariaanje_Coeymans_House_HABS_NY1.jpg",1675,"Ariaanje Coeymans House is a historic home located at Coeymans in Albany County, New York. It was built in c.1690 and has a 2- to _3 1⁄2-story main block with a 1- to 2-story wing. It is constructed of stone and brick and has a gambrel roof."),
+
+                     new building("Conference House",40.502861,-74.253778,house,"https://en.wikipedia.org/wiki/Conference_House","https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Conference-house-staten-island.jpg/500px-Conference-house-staten-island.jpg",1675,"The Conference House (also known as Billop House[3]) was built before 1680 and is located near the southernmost tip of New York State on Staten Island, which became known as Billop's Point in the 18th century. The Staten Island Peace Conference was held here on September 11, 1776, which unsuccessfully attempted to end the American Revolutionary War."),
+                     
+                     new building("Jans Martense Schenck house",40.615556,-73.912111,house,"https://en.wikipedia.org/wiki/Jans_Martense_Schenck_house","https://upload.wikimedia.org/wikipedia/commons/d/dd/Schenk-Crooke_House2.jpg",1675,"Jan Martense Schenck (1631 in Amersfoort, Utrecht, Netherlands - Aug, 27 1687) arrived in New Netherlands on June 28, 1650, on the ship De Valckenier (the Falconer) with his sister Annetje and brother Roelof. He bought a parcel of land on Molen Eylandt (Mill Island) in the Dutch town of Nieuw Amersfoort in what is now the Mill Basin section of Brooklyn, New York"),
+
+                     new building("Old Senate House",41.935078,-74.019111,house,"https://en.wikipedia.org/wiki/Senate_House_State_Historic_Site","https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Kingston-senate-house.jpg/500px-Kingston-senate-house.jpg",1676,"The Senate House State Historic Site is located on Fair Street in Kingston, New York, United States. New York State was established there in 1777, during the Revolutionary War."),
+
+                     new building("Van Leuven-Bevier House Museum",41.686111,-74.170833,house,"https://en.wikipedia.org/wiki/Bevier_House","https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Bevier_House%2C_Gardiner%2C_NY.jpg/500px-Bevier_House%2C_Gardiner%2C_NY.jpg",1680,"Built by Andries Pieterse Van Leuven in 1680, on land he purchased from the Esopus Indians.[citation needed] Currently houses the Ulster County Historical Society"),
+
+                     new building("Van Nostrand-Starkins House",40.797222,-73.648611,house,"https://en.wikipedia.org/wiki/Main_Street_Historic_District_(Roslyn,_New_York)","https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Van_Nostrand-Starkins_House_from_Main_Street_and_East_Broadway.JPG/200px-Van_Nostrand-Starkins_House_from_Main_Street_and_East_Broadway.JPG",1680,"A one-and-a-half-story clapboard structure begun in 1680, making it the oldest in the village, it was purchased by blacksmith Joseph Starkins in 1795."),
+                     
+                     new building("Van Nostrand-Starkins House",40.797222,-73.648611,house,"https://en.wikipedia.org/wiki/Main_Street_Historic_District_(Roslyn,_New_York)","https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Van_Nostrand-Starkins_House_from_Main_Street_and_East_Broadway.JPG/200px-Van_Nostrand-Starkins_House_from_Main_Street_and_East_Broadway.JPG",1680,"A one-and-a-half-story clapboard structure begun in 1680, making it the oldest in the village, it was purchased by blacksmith Joseph Starkins in 1795."),
+                    
+                     new building("Old Halsey House", 40.877083,-72.388333, house,"https://en.wikipedia.org/wiki/Halsey_House_(Southampton,_New_York)","https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/OldHalseyHouseSouthhampton.jpg/220px-OldHalseyHouseSouthhampton.jpg",1683,"The Halsey House is a historic house converted into a museum, in Southampton, New York. It was built circa 1683 by Thomas Halsey Jr., the son of pioneer Thomas Halsey Sr."),
+
+                    new building("Philipse Manor Hall",40.935556,-73.899722,house,"https://en.wikipedia.org/wiki/Philipse_Manor_Hall","https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Philipse_Manor_Hall.jpg/250px-Philipse_Manor_Hall.jpg",1682,"The southwest corner, the oldest part of the structure, was built around 1682 by Dutch-born merchant and trader Frederick Philipse, a son-in-law of Stephanus Van Cortlandt, who — by the time of his death — had amassed a 52,000-acre (21,000 ha) estate along the Hudson River that encompassed the entire modern city of Yonkers and much of lower Westchester County."),
+                     
+                     new building("Old Dutch Church of Sleepy Hollow",41.090278,-73.861667,house,"https://en.wikipedia.org/wiki/Old_Dutch_Church_of_Sleepy_Hollow","https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Old_Dutch_Church%2C_Sleepy_Hollow%2C_NY.jpg/220px-Old_Dutch_Church%2C_Sleepy_Hollow%2C_NY.jpg",1685,"Frederick Philipse I, Lord of Philipse Manor, owned the vast stretch of land spanning from Spuyten Duyvil in the Bronx to the Croton River. After swearing allegiance and later being granted his Manorship from the English, he chose to establish his country seat at what was then known as North Tarrytown, where the Pocantico River flowed into the Hudson River. A small community had already been established there when he arrived in 1683, with 50 burials in the small cemetery. He built the first church for them at the southern end of the cemetery.[3]"),
+
+                    new building("Alice Austen House",40.614917,-74.063611,house,"https://en.wikipedia.org/wiki/Alice_Austen_House","https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Clear_Comfort_01.jpg/250px-Clear_Comfort_01.jpg",1690,"Built by a Dutch merchant then remodeled in the Gothic Revival Style in 1844. An old neighborhood tradition told that, after midnight, one could hear the clanking of chains coming from the cellar. This was attributed to the ghosts of slaves who were kept there during the American Revolution. Another apocryphal story is that of a British soldier hanging himself from a beam in the parlor because of a broken heart. It is said that the sound of his military boots and the clinking of his spurs may be heard in that room after midnight"),
+
+                    new building("Old Quaker Meeting House",40.763028,-73.830361,house,"https://en.wikipedia.org/wiki/Old_Quaker_Meeting_House_(Flushing,_Queens)","https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Old-quaker-house-flushing.jpg/250px-Old-quaker-house-flushing.jpg",1694,"The Old Quaker Meeting House was built in 1694 as a small frame structure on land acquired in 1692 by John Bowne and John Rodman in Flushing, New York. The first recorded meeting held there was on November 24, 1694. During the American Revolutionary War, the Meeting House was seized by the Royal Army and in 1776, converted to a barracks, prison, and hospital for soldiers. After the war, in 1783, the Quakers returned the building to its original use."),
+                    
+                     new building("Jarvis-Fleet House",40.899444,-73.391944,house,"https://en.wikipedia.org/wiki/Jarvis-Fleet_House","https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/George_Bradford_Brainerd_%28American%2C_1845-1887%29._Jarvis_House%2C_Huntington%2C_Long_Island%2C_ca._1872-1887.jpg/220px-George_Bradford_Brainerd_%28American%2C_1845-1887%29._Jarvis_House%2C_Huntington%2C_Long_Island%2C_ca._1872-1887.jpg,1700","Jarvis-Fleet House is a historic home located at Huntington in Suffolk County, New York. It is a _2 1⁄2-story, seven-bay shingled dwelling with a steeply pitched gable roof. It was built about 1700 and is one of the only buildings associated with the early settlement of Centerport."),
+                     
+                    new building("Lispenard–Rodman–Davenport House",40.901111,-73.771389,house,"https://en.wikipedia.org/wiki/Lispenard%E2%80%93Rodman%E2%80%93Davenport_House","https://en.wikipedia.org/wiki/File:Lispenard-Rodman-Davenport_House,_180_Davenport_Ave._New_Rochelle,_(Main_building).JPG",1700,"In 1708 Antoine Lispenard bought from Jacob Leisler's son a half interest in the large peninsula, or neck, jutting out from the mainland between New Rochelle Creek and Long Island Sound. Six years later he bought the other half. Across the inlet he built a dam and a tidal gristmill. Each incoming tide filled the millpond behind the dam, and then, as the tide ebbed, the water was released through a millrace to turn the mill wheel. Nearby the mill, on the neck itself, Lispenard built his home, a stone house of one-and-a-half stories, with the front eaves extending to form the roof of a wide porch."),
+                     
+                     new building("Beekman Arms and Delamater Inn", 41.9266, -73.913,house,"https://en.wikipedia.org/wiki/Beekman_Arms_and_Delamater_Inn","https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Beekman_Arms_Oldest_Inn_Rhinebeck_2007_02.jpg/240px-Beekman_Arms_Oldest_Inn_Rhinebeck_2007_02.jpg",1766,"The Beekman Arms Inn—formerly known as the Traphagen Tavern, Bogardus Tavern, and Potter’s Tavern and currently known as the Beekman Arms and Delamater Inn—is an historic inn located in the town of Rhinebeck, New York,[1] within the Rhinebeck Village Historic District, a historic district added to the National Register of Historic Places in 1979 as a cohesive area of preserved historic buildings.[2] The inn claims to be America's oldest continuously operated hotel."),
+
+                    new building("Tobias van Steenburgh House",41.926944,-74.015556,house,"https://en.wikipedia.org/wiki/Tobias_Van_Steenburgh_House","https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Tobias_van_Steenburgh_House%2C_Kingston%2C_NY.jpg/250px-Tobias_van_Steenburgh_House%2C_Kingston%2C_NY.jpg",1700,"The house's build date of 1700 comes from a statement by its owner in the late 1930s. He told the Daily Freeman, Kingston's newspaper, that the house had been built by that year. Its original owner, the first Van Steenburgh, was a man named Jan Janisse, later Jansen Timmerman, from the Dutch town of Amersfoort who assumed the Van Steenburgh name after he married in 1660. One of the few buildings in Kingston not burned in 1777 by British troops"),
+
+                    new building("Treasure House",40.572056,-74.147167,house,"https://en.wikipedia.org/wiki/Treasure_House","https://en.wikipedia.org/wiki/File:Treasurehouse.jpg",1700,"The Treasure House is a historic building located in Staten Island, New York City, New York, US. Samuel Grasset, a tanner and leather worker, built the original construction in approximately 1700. Additions were made in 1740, 1790 and 1860. Subsequent owners of the house in subsequent centuries include a cord wainer (shoemaker), innkeeper, stonemason, and coach trimmer. A number of local businesses have also occupied the structure. The house was named after a legend that a cache of American Revolutionary War era gold coins was discovered during renovation in about 1860."),
+
+                    new building("Tysen-Neville House",40.644444,-74.099167,house,"https://en.wikipedia.org/wiki/Tysen-Neville_House","https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Neville_House_806_Richmond_Terrace_Staten_Island%2C_NY.jpg/250px-Neville_House_806_Richmond_Terrace_Staten_Island%2C_NY.jpg",1700,"Neville House (also known as the Tysen-Neville House) is a historic home located at New Brighton, Staten Island, New York. It was built about 1770 and is constructed of red, quarried sandstone. It is in two sections: a _2 1⁄2-story main section and _1 1⁄2-story east wing, each covered by a gable roof. It features a 2-story verandah."),
+
+                    new building("Crailo", 42.635478,-73.749625,house, "https://en.wikipedia.org/wiki/Fort_Crailo", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Fort_Crailo_2010.jpg/250px-Fort_Crailo_2010.jpg",1704,"The Crailo State Historic Site (also known as Fort Crailo and Yankee Doodle House) is a historic, fortified brick manor house in Rensselaer, New York which was originally part of a large patroonship held by Kiliaen van Rensselaer (1586–1643). The word Crailo is derived from kraaien bos (Dutch for crow's woods) and refers to van Rensselaer's Estate in Huizen, Holland, which is also named Crailo."),
+
+                    new building("Mabee House",42.865556,-74.032222,house,"https://en.wikipedia.org/wiki/Mabee_House","https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Mabee_House_Jan_09.jpg/250px-Mabee_House_Jan_09.jpg",1705,"The oldest house in the Mohawk Valley. The property was first acquired by Daniel Janse Van Antwerpen in 1671. He purchased the property from the Mohawks and received a grant for the patent in 1680 from the English Governor Edmund Andros. Van Antwerpen, a friend, mentor, and neighbor of Jan Pieterse Mabee and wife Anna Borsboom in the Schenectady's Stockade Historic District, sold the westerly half of the farm property to Jan in 1705/6."),
+
+                    new building("Jan Van Loon House",42.257334,-73.811824,house,"https://en.wikipedia.org/wiki/Jan_Van_Loon_House","https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/JanVanLoonHouse.JPG/240px-JanVanLoonHouse.JPG",1706,"One of the oldest houses in Greene County. The Jan Van Loon House (/væn _lo_n/, like van loan) is one of the oldest extant buildings in New York State. It is located in Athens, New York at 39 South Washington Street (also known as New York State Route 385). It is inside the Village of Athens Multiple Resource Area (MRA) and the Athens Lower Village Historic District.[2] It was built by Jan Van Loon, who fathered eight children including Albertus Van Loon."),
+
+                     new building("Madam Brett Homestead",41.501781,-73.967128,house,"https://en.wikipedia.org/wiki/Madam_Brett_Homestead","https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Madam_brett_homestead_beacon_2006.jpg/250px-Madam_brett_homestead_beacon_2006.jpg",1709,"Oldest building in Dutchess County, first house on Rombout Patent, on National Register. The Madam Brett Homestead is an early 18th-century home located in the city of Beacon, New York, United States. It is the oldest standing building in its part of Dutchess County and has been listed in the National Register of Historic Places since 1976. It is also listed on the NYS Independence Trail."),
+
+                   new building( "Gomez Mill House",41.586667,-73.981389,house,"https://en.wikipedia.org/wiki/Gomez_Mill_House","https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Gomez_Mill_House.jpg/250px-Gomez_Mill_House.jpg",1712,"Oldest known extant residence of a Jewish American. The Gomez Mill House is located in the Town of Newburgh, New York, USA, on Mill House Road a short distance off US 9W, just south of the Orange–Ulster county line (its mailing address is in nearby Marlboro, in the latter). Over 300 years old, it is the earliest known surviving Jewish dwelling in North America and the oldest home in Orange County listed on the National Register of Historic Places."),
+
+                    new building("Lewis Pintard House",40.904444,-73.785278,house,"https://en.wikipedia.org/wiki/First_Presbyterian_Church_and_Lewis_Pintard_House","https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/First_Presbyterian_Church_and_Lewis_Pintard_House%2C_Pintard_Ave._New_Rochelle_%2C%28French_church%29.JPG/250px-First_Presbyterian_Church_and_Lewis_Pintard_House%2C_Pintard_Ave._New_Rochelle_%2C%28French_church%29.JPG,1710","Home of Revolutionary War patriot Lewis Pintard. The First Presbyterian Church and Lewis Pintard House is a pair of adjacent historic buildings in downtown New Rochelle, New York, United States. The church and its adjoining manse, the Pintard House, are on a 3-acre (1.2 ha) lot.[1][3] It was listed on the National Register of Historic Places in 1979."),
+
+
+                     new building("Fraunces Tavern",40.703333,-74.011389,house,"https://en.wikipedia.org/wiki/Fraunces_Tavern","https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Frauncestavern.JPG/250px-Frauncestavern.JPG",1719,"Etienne Stephen DeLancey built the current building as his house; tavern since 1762. Fraunces Tavern is a landmark museum and restaurant in New York City, situated at 54 Pearl Street at the corner of Broad Street. The location played a prominent role in history before, during and after the American Revolution, serving as a headquarters for George Washington, a venue for peace negotiations with the British, and housing federal offices in the Early Republic. It has been owned since 1904 by Sons of the Revolution in the State of New York Inc., which carried out a major conjectural reconstruction, and claim it is Manhattan's oldest surviving building. The museum interprets the building and its history, along with varied exhibitions of art and artifacts.[4] The tavern is a tourist site and a part of the American Whiskey Trail and the New York Freedom Trail."),
+                     
+                     new building("Hendrick I. Lott House",40.610278,-73.932778,house,"https://en.wikipedia.org/wiki/Hendrick_I._Lott_House","https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Hendrick_I.Lott_House_Brooklyn%2C_New_York-circa_1909.jpg/250px-Hendrick_I.Lott_House_Brooklyn%2C_New_York-circa_1909.jpg",1720,"The Hendrick I. Lott House is a historic home located at 1940 East 36th Street between Fillmore Avenue and Avenue S, in the neighborhood known as Marine Park, in the New York City borough of Brooklyn. There lies one of the oldest Dutch Colonial farmhouses in Kings County. The house remains structurally sound and virtually unchanged from the time Hendrick Lott constructed it in 1800, incorporating a section of the 1720 original homestead built by his grandfather, Johannes Lott.[2] Ph.D. candidates who grew up in the neighborhood found windowless rooms inside the house. They believed that slaves had slept in those rooms. Below the floors of those rooms, they found corncobs in star or cross shapes and other spiritual objects that showed mutual religious practices between slaves who worked there and Africans in West Africa. These spiritual objects were believed to serve the purpose of connecting the two worlds of the living and the dead."),
+                     
+                     new building("Jan Van Hoesen House",42.256419,-73.752208,house,"https://en.wikipedia.org/wiki/Jan_Van_Hoesen_House","https://en.wikipedia.org/wiki/File:VanHoesenHouse_1.jpg",1720,"Jan Van Hoesen House is an early-18th-century house in New York State. Driving northeast on NY 66 from Hudson to Chatham, just east of Claverack Creek, stands sentinel a vacant medieval-looking brick structure over the Dutch Acres Mobile Home Park. Like the Columbia County Historical Society's Luykas Van Alen House in Kinderhook, this steeply pitched roof, parapet-gabled house is a rare surviving example of a type of rural house characteristic of the upper Hudson Valley in the first half of the 18th century. Van Hoesen house is located on Route 66, north of the City of Hudson."),
+
+
+                    new building("Bull Stone House",41.430833,-74.2625,house,"https://en.wikipedia.org/wiki/Bull_Stone_House","https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Bull_Stone_House.jpg/250px-Bull_Stone_House.jpg",1720,"The Bull Stone House is located in the Town of Hamptonburgh, New York. It is a ten-room stone house built in the 1720s by William Bull and Sarah Wells, pioneer settlers of Central Orange County, NY. Bull, a stonemason, met and married Wells in the Wawayanda Patent (much of the present day towns of Goshen, Hamptonburgh, Minisink, and Warwick) while they were both working for the patent proprietors. Sarah Wells, an orphan,[3] arrived in the area as the Goshen's first female settler in 1712. She came there to work as an indentured house servant at the age of sixteen.[4][5] In 1715 Bull arrived in North America from Wolverhampton, Staffordshire, England and also came to work on the Wawayanda Patent, where they met. He was the hired mason for Daniel Crommelin, a French immigrant and New York City merchant. Property also contains the oldest intact Dutch barn in the state"),
+
+
+                    new building("Kreuzer-Pelton House",40.643611,-74.111944,house,"https://en.wikipedia.org/wiki/Kreuzer-Pelton_House","https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Kreuzer-pelton.jpg/250px-Kreuzer-pelton.jpg",1722,"The Kreuzer-Pelton House is a Dutch-influenced fieldstone house, erected in 1722 as a one-room cottage, which has been added to in two successive stages, just before the American Revolution in 1770, and in 1836. It is designated as a New York City landmark. The house was built by Joseph Rolph. During the American Revolutionary War, Tory militia commander Cortlandt Skinner used the house as his headquarters. William IV of the United Kingdom was a guest at the house."),
+
+                    new building("Albertus Van Loon House",42.266946,-73.805299,house,"https://en.wikipedia.org/wiki/Albertus_Van_Loon_House","https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Albertus_Van_Loon_House_-_02.JPG/250px-Albertus_Van_Loon_House_-_02.JPG",1724,"The Albertus Van Loon House (/væn _lo_n/, like van loan) is one of the oldest extant buildings in New York State. It is located in Athens, New York at 85 North Washington Street (also known as New York State Route 385). It is inside the Village of Athens Multiple Resource Area (MRA).It was built by Albertus Van Loon, who was one of eight children of Jan Van Loon. Possibly the second-oldest house in Greene County"),
+
+
+                    new building("French Castle at Fort Niagara",43.262778,-79.063056,house,"https://en.wikipedia.org/wiki/Fort_Niagara","https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/French_castle_at_Fort_Niagara_2.JPG/250px-French_castle_at_Fort_Niagara_2.JPG",1726,"Oldest building on the Great lakes and one of the longest continuously run military bases in the United States, 1726–present-day. René-Robert Cavelier, Sieur de La Salle built the first structure, called Fort Conti, in 1678. In 1687, the Governor of New France, the Marquis de Denonville, constructed a new fort at the former site of Fort Conti. He named it Fort Denonville and posted a hundred men under the command of Capt. Pierre de Troyes, Chevalier de Troyes. The winter weather and disease was severe, and all but twelve perished by the time a relief force returned from Montreal. It was decided in September 1688 to abandon the post and the stockade was pulled down. "),
+
+
+                    new building("48 Hudson Avenue",42.647528,-73.751878,house,"https://en.wikipedia.org/wiki/48_Hudson_Avenue","https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/48_Hudson_Ave_Albany.jpg/250px-48_Hudson_Ave_Albany.jpg",1728,"48 Hudson Avenue (also known as the Van Ostrande–Radliff House) is the oldest building in the city of Albany, New York.[2] It was believed by Paul Huey, in the Albany architectural guide of 1993, to have been built in 1759 by Johannes Radliff when he married Elizabeth Singleton because he believed it was built after the stockade was moved south by one block. Research done by Albany historian John Wolcott proved that it had been occupied by Johannes van Ostrande between 1728 and 1734 and that a mortgage Radliff had on the house referred to it as formerly van Ostrande. The Lamont-Doherty Earth Sciences laboratory of Columbia University performed dendrochronology on a wood core sample from the building to confirm that the building dated from 1728.[4] It has been listed on the National Register of Historic Places since January 10, 2008;[1] prior to that, it had been a contributing property to the Downtown Albany Historic District. "),
+
+                     
+                     new building("Lent Homestead",40.773056,-73.891944,house,"https://en.wikipedia.org/wiki/Lent_Homestead_and_Cemetery","https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Lent_Homestead_01.JPG/250px-Lent_Homestead_01.JPG",1729,"The earliest part of the house was built by Abraham Riker in 1656. He was an early settler of New Amsterdam, and a member of the Riker family, for whom Rikers Island nearby is named, The house was owned by the Riker and Lent families for much of its history. In 1729, the house was expanded and additions were built by then owner Abraham Lent, a descendent of Abraham Riker. The small graveyard contains not only the graves of family members, but also that of Irish revolutionary and physician William James MacNeven who died in 1841 and who had stayed with the Riker family.[3] Around 1800 the house was again expanded to its current size. It remains an intact house in the Dutch Colonial style. Current owner Marion Duckworth Smith and her late husband Michael Smith began restoration work in 1980,[4] and the house was added to the National Register of Historic Places in 1984. "),
+
+
+                    new building("Benner House",41.920556,-73.909444,house,"https://en.wikipedia.org/wiki/Benner_House","https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Benner_House%2C_Rhinebeck%2C_NY.jpg/250px-Benner_House%2C_Rhinebeck%2C_NY.jpg",1730,"Oldest house in the village; a rare example of German vernacular architecture, and the sole remaining house in Dutchess County with a one-room floorplan built to German traditions rather than Dutch."),
+
+
+                    new building("King Mansion",40.703056,-73.803889,house,"https://en.wikipedia.org/wiki/King_Manor","https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Rufus-king-house.jpg/250px-Rufus-king-house.jpg",1730,"The rear section of the house dates to 1730, the left section to 1755, the main structure (right section) to 1806. King Manor, also known as the Rufus King House, is in Jamaica, Queens. It was the home of Rufus King, a signer of the United States Constitution, a Senator from New York, and Ambassador to Great Britain immediately after the American Revolution.[3] It is located at 150th Street and Jamaica Avenue. Descendants of King's family lived in the house until 1896 when Rufus' granddaughter Cornelia King died and sold the house to the Village of Jamaica. When Jamaica, along with the western half of Queens County was annexed by New York City in 1898, the house and the property were turned over to the New York City Parks Department which re-designated the land as Rufus King Park."),
+
+
+                    new building("Suydam House",40.885833,-73.366944,house,"https://en.wikipedia.org/wiki/Suydam_House","https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Suydam_House_Centerport_Suffolk_County_New_York.jpg/250px-Suydam_House_Centerport_Suffolk_County_New_York.jpg",1730,"The Suydam house is architecturally and historically significant as a distinguished, largely extant example of settlement period domestic architecture on Long Island that recalls the early growth of the town of Huntington. Built circa 1730, this New England style saltbox (with eighteenth century wing) is one of the oldest remaining houses in the village of Centerport. It is similar in plan, construction and design to many settlement period dwellings in Huntingdon (Town) such as the John Wood House (circa 1704) and the Ireland-Gardiner Farm (circa 1750). Like these and other seventeenth and eighteenth century dwellings in the Huntingdon (Town) Multiple Resource area, the building exhibits characteristic architectural features of early construction practices on Long Island, including heavy hewn timber framing, original wrought-iron hardware, and an overall lack of decorative ornamentation."),
+                     
+                     new building("Queen Anne Parsonage",40.773278,-73.7525,house,"https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Cornelius_Van_Wyck_House.JPG/250px-Cornelius_Van_Wyck_House.JPG",1734,"The history of the Cornelius Van Wyck estate predates the construction of the Van Wyck house. Cornelius Van Wyck's father, Johannes Van Wyck, purchased 125 acres of land from Richard and Sarah Cornell. This property was inherited by Cornelius when his father died in 1734. The house was originally constructed in 1735 by Cornelius Van Wyck, a third-generation American. Cornelius and his wife Mary Hicks added to their original farm and lived in the house until his death. Upon his death, the house passed to his son Stephen Van Wyck, who built additions to the house. However, Stephen, the eldest of Cornelius' 3 sons, showed no interest in farming; therefore, he sold his share of the inheritance to his cousin Cornelius, who was the last Van Wyck to live in the home. In 1819, possession of the home left the Van Wyck family when it was sold to Winant Van Zandt. Van Zandt, who was wealthy, had purchased 120 acres of adjoining land to the north (referred to as the Point area of Douglas Manor).  In 1819, Van Zandt constructed a large mansion on the Point.[3] Upon George Van Zandt's death, his son William inherited the property. During the tenure years in which the Douglas family owned the Cornelius Van Wyck House, the estate was used as a guest house and was sometimes rented to friends."),
+
+
+                     ];
+    
+    createMarkers();
+
+
+
+  
+</script>
+<style>
+    p{
+        color: #000 !important;
+        margin: 0 !important;
+        font-size: 10px;
+    }
+</style>
+
+    
+    <style>
+    
+        .popupSize{
+            max-height: 100px;
+            max-width: 100px
+        }
+    
+    </style>
+    
+    <style>
+    .leaflet-popup-content {
+    width: 200px;
+    height: 200px;
+    overflow-y: scroll;
+}
+    </style>
+</html>
